@@ -16,7 +16,6 @@ from torchvision import datasets, transforms
 
 import params
 
-
 class USPS(data.Dataset):
     """USPS Dataset.
 
@@ -31,7 +30,8 @@ class USPS(data.Dataset):
             E.g, ``transforms.RandomCrop``
     """
 
-    url = "https://raw.githubusercontent.com/mingyuliutw/CoGAN_PyTorch/master/data/uspssample/usps_28x28.pkl"
+    # url = "https://raw.githubusercontent.com/mingyuliutw/CoGAN_PyTorch/master/data/uspssample/usps_28x28.pkl"
+    url = "https://github.com/mingyuliutw/CoGAN/blob/master/cogan_pytorch/data/uspssample/usps_28x28.pkl"
 
     def __init__(self, root, train=True, transform=None, download=False):
         """Init USPS dataset."""
@@ -39,7 +39,7 @@ class USPS(data.Dataset):
         self.root = os.path.expanduser(root)
         self.filename = "usps_28x28.pkl"
         self.train = train
-        # Num of Train = 7438, Num ot Test 1860
+        # Num of Train = 7438, Num of Test 1860
         self.transform = transform
         self.dataset_size = None
 
@@ -101,7 +101,7 @@ class USPS(data.Dataset):
         """Load sample images from dataset."""
         filename = os.path.join(self.root, self.filename)
         f = gzip.open(filename, "rb")
-        data_set = pickle.load(f, encoding="bytes")
+        data_set = pickle.load(f, encoding='bytes')
         f.close()
         if self.train:
             images = data_set[0][0]

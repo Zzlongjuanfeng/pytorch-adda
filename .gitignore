@@ -1,6 +1,8 @@
 # pytorch dataset
 data
 snapshots
+.idea/
+draft.py
 
 # trash
 .DS_Store

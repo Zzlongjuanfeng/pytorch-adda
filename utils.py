@@ -2,10 +2,12 @@
 
 import os
 import random
+import numpy as np
 
 import torch
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
+from torch.nn import DataParallel
 
 import params
 from datasets import get_mnist, get_usps
@@ -31,7 +33,7 @@ def denormalize(x, std, mean):
     return out.clamp(0, 1)
 
 
-def init_weights(layer):
+def weights_init_normal(layer):
     """Init weights for layers w.r.t. the original paper."""
     layer_name = layer.__class__.__name__
     if layer_name.find("Conv") != -1:
@@ -39,6 +41,8 @@ def init_weights(layer):
     elif layer_name.find("BatchNorm") != -1:
         layer.weight.data.normal_(1.0, 0.02)
         layer.bias.data.fill_(0)
+    elif layer_name.find("Linear") != -1:
+        layer.weight.data.normal_(0.0, 0.02)
 
 
 def init_random_seed(manual_seed):
@@ -50,6 +54,7 @@ def init_random_seed(manual_seed):
         seed = manual_seed
     print("use random seed: {}".format(seed))
     random.seed(seed)
+    np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
@@ -63,20 +68,24 @@ def get_data_loader(name, train=True):
         return get_usps(train)
 
 
-def init_model(net, restore):
+def init_model(net, restore, pre_train=False):
     """Init models with cuda and weights."""
     # init weights of model
-    net.apply(init_weights)
+    net.apply(weights_init_normal)
 
     # restore model weights
     if restore is not None and os.path.exists(restore):
-        net.load_state_dict(torch.load(restore))
+        if pre_train:
+            net.encoder.load_state_dict(torch.load(restore), strict=False)
+        else:
+            net.load_state_dict(torch.load(restore))
         net.restored = True
         print("Restore model from: {}".format(os.path.abspath(restore)))
 
     # check if cuda is available
     if torch.cuda.is_available():
         cudnn.benchmark = True
+        # DataParallel(net, device_ids=params.gpu_ids)
         net.cuda()
 
     return net
