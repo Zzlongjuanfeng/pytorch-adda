@@ -68,14 +68,14 @@ def get_data_loader(name, train=True):
         return get_usps(train)
 
 
-def init_model(net, restore, pre_train=False):
+def init_model(net, restore, imageNet_train=False):
     """Init models with cuda and weights."""
     # init weights of model
     net.apply(weights_init_normal)
 
     # restore model weights
     if restore is not None and os.path.exists(restore):
-        if pre_train:
+        if imageNet_train:
             net.encoder.load_state_dict(torch.load(restore), strict=False)
         else:
             net.load_state_dict(torch.load(restore))

@@ -78,6 +78,8 @@ def train_src(encoder, classifier, data_loader):
         # eval model on train set
         if ((epoch + 1) % params.eval_epoch_pre == 0):
             loss, acc = eval_src(encoder, classifier, data_loader)
+            encoder.train()
+            classifier.train()
 
             info = {"train_loss_all": loss,
                     'train-acc': acc

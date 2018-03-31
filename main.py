@@ -17,20 +17,20 @@ if __name__ == '__main__':
     src_data_loader = get_visda(root=params.data_root, sub_dir='train', split='train')
     src_data_loader_eval = get_visda(root=params.data_root, sub_dir='train', split='test')
 
-    # tgt_data_loader = get_data_loader(params.tgt_dataset)
-    # tgt_data_loader_eval = get_data_loader(params.tgt_dataset, train=False)
+    tgt_data_loader = get_visda(root=params.data_root, sub_dir='validation', split='train')
+    tgt_data_loader_eval = get_visda(root=params.data_root, sub_dir='validation', split='test')
 
     # load models
     src_encoder = init_model(net=ResNet34Encoder(),
-                             restore=params.src_encoder_restore, pre_train=True)
+                             restore=params.src_encoder_restore)
     src_classifier = init_model(net=Classifier(),
                                 restore=params.src_classifier_restore)
-    # tgt_encoder = init_model(net=LeNetEncoder(),
-    #                          restore=params.tgt_encoder_restore)
-    # critic = init_model(Discriminator(input_dims=params.d_input_dims,
-    #                                   hidden_dims=params.d_hidden_dims,
-    #                                   output_dims=params.d_output_dims),
-    #                     restore=params.d_model_restore)
+    tgt_encoder = init_model(net=ResNet34Encoder(),
+                             restore=params.tgt_encoder_restore)
+    critic = init_model(Discriminator(input_dims=params.d_input_dims,
+                                      hidden_dims=params.d_hidden_dims,
+                                      output_dims=params.d_output_dims),
+                        restore=params.d_model_restore)
 
     # train source model
     print("=== Training classifier for source domain ===")
